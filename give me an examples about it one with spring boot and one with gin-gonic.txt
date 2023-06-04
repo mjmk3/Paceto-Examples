@@ -1,0 +1,174 @@
+﻿Sure. Here are two examples of how to use Paceto with Spring Boot and Gin-Gonic:
+Spring Boot
+To use Paceto with Spring Boot, you need to add the following dependency to your project:
+Code snippet
+<dependency>
+    <groupId>com.paceto</groupId>
+    <artifactId>paceto-spring-boot-starter</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
+
+Once you have added the dependency, you can configure Paceto in your application.config file. The following is an example of how to do this:
+Code snippet
+spring:
+  paceto:
+    server:
+      host: localhost
+      port: 8080
+    client:
+      keystore: classpath:paceto.jks
+      keystore-password: password
+
+
+Once you have configured Paceto, you can start issuing and verifying Paceto tokens. The following is an example of how to do this:
+Code snippet
+@RestController
+public class ExampleController {
+
+
+    @Autowired
+    private PacetoService pacetoService;
+
+
+    @PostMapping("/issue-token")
+    public ResponseEntity<PacetoToken> issueToken(@RequestBody PacetoTokenRequest request) {
+        return ResponseEntity.ok(pacetoService.issueToken(request));
+    }
+
+
+    @GetMapping("/verify-token")
+    public ResponseEntity<PacetoUser> verifyToken(@RequestBody PacetoToken token) {
+        return ResponseEntity.ok(pacetoService.verifyToken(token));
+    }
+}
+
+
+Gin-Gonic
+To use Paceto with Gin-Gonic, you need to add the following dependency to your project:
+Code snippet
+go get github.com/paceto/paceto-gin-gonic
+
+
+Once you have added the dependency, you can configure Paceto in your main.go file. The following is an example of how to do this:
+Code snippet
+func main() {
+    router := gin.Default()
+
+
+    // Configure Paceto
+    paceto.Configure(router, paceto.Options{
+        Server: paceto.Server{
+            Host: "localhost",
+            Port: 8080,
+        },
+        Client: paceto.Client{
+            Keystore: "paceto.jks",
+            KeystorePassword: "password",
+        },
+    })
+
+
+    // Register routes
+    router.POST("/issue-token", issueToken)
+    router.GET("/verify-token", verifyToken)
+
+
+    // Start server
+    router.Run()
+}
+
+
+func issueToken(c *gin.Context) {
+    // Get request body
+    request := paceto.TokenRequest{}
+    if err := c.Bind(&request); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+
+    // Issue token
+    token, err := paceto.IssueToken(request)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+
+    // Return token
+    c.JSON(http.StatusOK, token)
+}
+
+
+func verifyToken(c *gin.Context) {
+    // Get token from request
+    token := c.Request.Header.Get("Authorization")
+
+
+    // Verify token
+    user, err := paceto.VerifyToken(token)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+        return
+    }
+
+
+    // Return user
+    c.JSON(http.StatusOK, user)
+}
+
+
+These are just two examples of how to use Paceto. For more information, please visit the Paceto website or join the Paceto community.
+
+
+
+
+
+
+
+
+
+
+Sure. Here is an example of how to use Paceto with
+ .NET Core:
+C#
+using Paceto;
+using System.Net.Http;
+
+
+namespace Example
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // Create a Paceto client
+            var client = new PacetoClient("localhost", 8080);
+
+
+            // Issue a token
+            var token = client.IssueToken(new PacetoTokenRequest
+            {
+                Subject = "John Doe",
+                Roles = new[]
+                {
+                    "admin",
+                    "user"
+                }
+            });
+
+
+            // Verify the token
+            var user = client.VerifyToken(token);
+
+
+            // Do something with the user
+            Console.WriteLine(user.Subject);
+        }
+    }
+}
+
+
+This code will issue a Paceto token to a user with the subject "John Doe" and the roles "admin" and "user". The token will then be verified and the user's subject will be printed to the console.
+For more information, please visit the Paceto website or join the Paceto community.
